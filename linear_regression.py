@@ -6,8 +6,9 @@ import statsmodels.api as sm
 import collections
 
 # Loads the reduced version of the Lending Club Dataset
-datalink = 'https://spark-public.s3.amazonaws.com/dataanalysis/loansData.csv'
-loansData = pd.read_csv(datalink)
+loadlink = 'https://spark-public.s3.amazonaws.com/dataanalysis/loansData.csv'
+dumplink = '/Users/alihassan/Desktop/Thinkful/Projects/stats/loansData_clean.csv'
+loansData = pd.read_csv(loadlink)
 
 # Drop null rows
 loansData.dropna(inplace=True)
@@ -18,7 +19,6 @@ def getlowfico(x):
 	return int(x[0])
 
 loansData['FICO.Score'] = loansData['FICO.Range'].map(lambda x: getlowfico(x) )
-
 
 # Take-out Percentage
 def removepercentage(x):
@@ -64,3 +64,7 @@ print 'Coefficients: ', f.params[1:2]
 print 'Intercept: ', f.params[0]
 print 'P-Values: ', f.pvalues
 print 'R-Squared: ', f.rsquared
+
+# Dump data to a CSV file
+loansData.to_csv(dumplink, header=True, index=False)
+
