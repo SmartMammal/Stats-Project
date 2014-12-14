@@ -9,6 +9,7 @@ import sqlite3 as lite # This library allows us to create and store table in a S
 import time # a package with datetime objects
 from dateutil.parser import parse # a package for parsing a string into a Python datetime object
 import collections # Use this to build dictionary using defaultdict
+import datetime
 
 #Getting a a file off the internet:
 #Documentation for requests package: http://docs.python-requests.org/en/latest/
@@ -126,8 +127,6 @@ for i in range(60):
 
     time.sleep(60) # Pause for 1 minute (60 seconds) before going through the loop
 
-con.close() # close the database connection when done
-
 df = pd.read_sql_query("SELECT * FROM available_bikes ORDER BY execution_time",con,index_col='execution_time')
 
 hour_change = collections.defaultdict(int)
@@ -156,7 +155,11 @@ max_station = keywithmaxval(hour_change)
 cur.execute("SELECT id, stationname, latitude, longitude FROM citibike_reference WHERE id = ?", (max_station,))
 data = cur.fetchone()
 print "The most active station is station id %s at %s latitude: %s longitude: %s " % data
-print "With " + str(hour_change[379]) + " bicycles coming and going in the hour between " + datetime.datetime.fromtimestamp(int(df.index[0])).strftime('%Y-%m-%dT%H:%M:%S') + " and " + datetime.datetime.fromtimestamp(int(df.index[-1])).strftime('%Y-%m-%dT%H:%M:%S')
+
+print "With " + str(hour_change[max_station]) + " bicycles coming and going in the hour between " + datetime.datetime.fromtimestamp(int(df.index[0])).strftime('%Y-%m-%dT%H:%M:%S') + " and " + datetime.datetime.fromtimestamp(int(df.index[-1])).strftime('%Y-%m-%dT%H:%M:%S')
+#print "For the time between " + datetime.datetime.fromtimestamp(int(df.index[0])).strftime('%Y-%m-%dT%H:%M:%S') + " and " + datetime.datetime.fromtimestamp(int(df.index[-1])).strftime('%Y-%m-%dT%H:%M:%S')
 
 plt.bar(hour_change.keys(), hour_change.values())
 plt.show()
+
+con.close() # close the database connection when done
